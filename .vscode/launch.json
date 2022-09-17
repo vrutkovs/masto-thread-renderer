@@ -1,0 +1,45 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'masto-thread-renderer'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=masto-thread-renderer",
+          "--package=masto-thread-renderer"
+        ],
+        "filter": {
+          "name": "masto-thread-renderer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'masto-thread-renderer'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=masto-thread-renderer",
+          "--package=masto-thread-renderer"
+        ],
+        "filter": {
+          "name": "masto-thread-renderer",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
