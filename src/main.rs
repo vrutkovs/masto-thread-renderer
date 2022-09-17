@@ -1,4 +1,6 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
+use rocket::fs::FileServer;
 
 mod templates;
 
@@ -11,5 +13,7 @@ fn index() -> templates::Index {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+    rocket::build()
+        .mount("/", routes![index])
+        .mount("/public", FileServer::from("public"))
 }
