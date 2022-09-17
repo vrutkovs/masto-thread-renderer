@@ -3,12 +3,11 @@
 <div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24">
 {% include "components/input.html" %}
 </div>
-<div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24"></div>
-<hr/>
-{% let toot = root_toot.clone() %}
-{% include "components/toot.html" %}
-{% for toot in thread_children %}
+<div class="columns-1"></div>
+  {% let toot = root_toot.clone() %}
   {% include "components/toot.html" %}
-{% endfor %}
+  {% for toot in thread_children %}
+    {% include "components/toot.html" %}
+  {% endfor %}
 </div>
 {% endblock %}

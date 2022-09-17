@@ -1,1 +1,3 @@
-<div>{{ toot.embed.clone() }}</div>
+<div class="container mx-auto px-4">
+  <iframe src="{{ toot.embed_url.clone() }}" class="mastodon-embed"></iframe><script src="{{ toot.embed_js.clone() }}" async="async"></script>
+</div>

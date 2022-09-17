@@ -1,4 +1,4 @@
-use crate::mastodon::Toot;
+use crate::mastodon::TootTemplate;
 use askama::Template;
 
 #[derive(Template)]
@@ -13,6 +13,6 @@ pub struct Index {
 pub struct Thread {
     pub title: String,
     pub url: Option<String>,
-    pub root_toot: Toot,
-    pub thread_children: Vec<Toot>,
+    pub root_toot: TootTemplate,
+    pub thread_children: Vec<TootTemplate>,
 }
