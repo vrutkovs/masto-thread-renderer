@@ -1,0 +1,35 @@
+{% extends "components/base.html" %}
+{% block content %}
+<div class="container mx-auto flex flex-col md:flex-row items-center my-12 md:my-24">
+    <!--Left Col-->
+    <div class="flex flex-col w-full lg:w-1/2 justify-center items-start pt-12 pb-24 px-6 group">
+        <p class="uppercase tracking-loose">Web template</p>
+        <div class="group flex justify-center items-center">
+            <h1 class="font-bold text-3xl my-4 flx flex-row">Rust + Rocket + Askama + TailwindCSS </h1>
+            <h1 class="hidden lg:block mx-2 font-bold text-3xl my-4 flx flex-row"> = </h1>
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="hidden lg:block h-12 w-12 fill-current text-red-600 group-hover:animate-pulse" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+        </div>
+        <p class="leading-normal mb-4">This is a template repo to quickly setup a Rust web project using Rocket as the
+            web
+            server and Askama + TailwindCSS as the template engine. Go to the wiki for more information.</p>
+        <form action="https://github.com/UpsettingBoy/rocket-template/wiki">
+            <input type="submit"
+                class="bg-transparent hover:bg-gray-900 text-gray-900 hover:text-white rounded shadow hover:shadow-lg py-2 px-4 border border-gray-900 hover:border-transparent cursor-pointer"
+                value="Go to wiki">
+        </form>
+    </div>
+    <!--Right Col-->
+    <div class="w-full lg:w-1/2 lg:py-6 text-center">
+        <!--Add your product image here-->
+        <svg class="fill-current text-gray-900 w-3/5 mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path
+                d="M17 6V5h-2V2H3v14h5v4h3.25H11a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6zm-5.75 14H3a2 2 0 0 1-2-2V2c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5.75zM11 8v8h6V8h-6zm3 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+        </svg>
+    </div>
+</div>
+{% endblock %}

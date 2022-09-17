@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/public/assets/favicon.png" type="image/png">
+    <title>{% block title %}{{ title }} - My App{% endblock %}</title>
+
+    {% include "components/styles.html" %}
+</head>
+
+<body>
+    {% include "components/nav.html" %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center mb-2">
+        <div>Original template: <a class="underline"
+                href="https://www.tailwindtoolbox.com/templates/hero-product">www.tailwindtoolbox.com</a></div>
+        <div>Favicon designed by <a class="underline" href="https://www.freepik.com" title="Freepik">Freepik</a> from <a
+                class="underline" href="https://www.flaticon.es/" title="Flaticon">www.flaticon.es</a></div>
+    </footer>
+</body>
+
+</html>

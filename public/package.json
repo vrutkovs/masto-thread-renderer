@@ -1,0 +1,16 @@
+{
+  "name": "public",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "css": "npx tailwindcss-cli@latest build ./css/tailwind.css -o ./css/style.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autoprefixer": "^10.2.5",
+    "postcss": "^8.3.0",
+    "tailwindcss": "^2.1.2"
+  }
+}

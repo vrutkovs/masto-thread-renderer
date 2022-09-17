@@ -1,8 +1,12 @@
 #[macro_use] extern crate rocket;
 
+mod templates;
+
 #[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
+fn index() -> templates::Index {
+    templates::Index {
+        title: "Index".to_string(),
+    }
 }
 
 #[launch]
