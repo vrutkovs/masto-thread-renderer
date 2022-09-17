@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "css": "npx tailwindcss-cli@latest build ./css/tailwind.css -o ./css/style.css"
+    "css": "npx tailwindcss-cli@latest build ./css/tailwind.css -o ./css/style.css --minify"
   },
   "author": "",
   "license": "ISC",
