@@ -3,6 +3,7 @@ use crate::templates;
 use base_url::{BaseUrl, TryFrom};
 use rocket::http::Status;
 use rocket::response::status::Custom;
+use rocket::State;
 
 #[get("/")]
 pub async fn index() -> templates::Index {
@@ -13,18 +14,20 @@ pub async fn index() -> templates::Index {
 }
 
 #[get("/thread?<url>")]
-pub async fn thread(url: String) -> Result<templates::Thread, Custom<String>> {
+pub async fn thread(
+    url: String,
+    client: &State<reqwest::Client>,
+) -> Result<templates::Thread, Custom<String>> {
     let toot_url = BaseUrl::try_from(url.as_str())
         .map_err(|e| Custom(Status::InternalServerError, format!("{:?}", e)))?;
     let root_toot = mastodon::get_toot_embed_code(toot_url.clone())
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
 
-    let client = reqwest::Client::new();
-    let toot_details = mastodon::get_toot_details(&client, &toot_url)
+    let toot_details = mastodon::get_toot_details(client, &toot_url)
         .await
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
     let thread_children: Vec<mastodon::TootTemplate> =
-        mastodon::get_children(&client, &toot_url, &toot_details.account)
+        mastodon::get_children(client, &toot_url, &toot_details.account)
             .await
             .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?
             .iter()
@@ -41,16 +44,18 @@ pub async fn thread(url: String) -> Result<templates::Thread, Custom<String>> {
 }
 
 #[get("/markdown?<url>")]
-pub async fn markdown(url: String) -> Result<templates::Markdown, Custom<String>> {
+pub async fn markdown(
+    url: String,
+    client: &State<reqwest::Client>,
+) -> Result<templates::Markdown, Custom<String>> {
     let toot_url = BaseUrl::try_from(url.as_str())
         .map_err(|e| Custom(Status::InternalServerError, format!("{:?}", e)))?;
 
-    let client = reqwest::Client::new();
-    let root_toot = mastodon::get_toot_details(&client, &toot_url)
+    let root_toot = mastodon::get_toot_details(client, &toot_url)
         .await
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
     let thread_children: Vec<mastodon::Toot> =
-        mastodon::get_children(&client, &toot_url, &root_toot.account)
+        mastodon::get_children(client, &toot_url, &root_toot.account)
             .await
             .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
     Ok(templates::Markdown {

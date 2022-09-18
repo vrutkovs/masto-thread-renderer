@@ -22,6 +22,7 @@ fn rocket() -> _ {
         .extract_inner("public_files_path")
         .unwrap_or("public");
     rocket
+        .manage(reqwest::Client::new())
         .mount(
             "/",
             routes![healthz, routes::index, routes::thread, routes::markdown],
