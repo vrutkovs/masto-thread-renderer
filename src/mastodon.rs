@@ -7,8 +7,9 @@ pub struct TootTemplate {
     pub embed_js: String,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct MastoAccount {
+    pub id: String,
     pub url: String,
 }
 
@@ -16,6 +17,7 @@ pub struct MastoAccount {
 pub struct Toot {
     pub account: MastoAccount,
     pub url: String,
+    pub in_reply_to_account_id: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
@@ -45,7 +47,7 @@ pub async fn get_toot_id_from_url(toot_url: BaseUrl) -> Fallible<String> {
         .map_err(|e| anyhow!(e.to_string()))
 }
 
-pub async fn get_toot_author(toot_url: BaseUrl) -> Fallible<String> {
+pub async fn get_toot_author(toot_url: BaseUrl) -> Fallible<MastoAccount> {
     let toot_id = get_toot_id_from_url(toot_url.clone()).await?;
     let mut toot_details_url = toot_url.clone();
     toot_details_url.make_host_only();
@@ -57,10 +59,10 @@ pub async fn get_toot_author(toot_url: BaseUrl) -> Fallible<String> {
         .await?
         .json::<Toot>()
         .await?;
-    Ok(toot_details.account.url)
+    Ok(toot_details.account)
 }
 
-pub async fn get_children(toot_url: BaseUrl, author_url: String) -> Fallible<Vec<TootTemplate>> {
+pub async fn get_children(toot_url: BaseUrl, author: MastoAccount) -> Fallible<Vec<TootTemplate>> {
     // Last section of the URL is status ID
     let toot_id = toot_url
         .path_segments()
@@ -80,7 +82,11 @@ pub async fn get_children(toot_url: BaseUrl, author_url: String) -> Fallible<Vec
     toot_context
         .descendants
         .iter()
-        .filter(|t| t.account.url == author_url)
+        // Filter out replies from other users or from author to other users
+        .filter(|t| {
+            t.account.url == author.url && t.in_reply_to_account_id == Some(author.clone().id)
+        })
+        // Filter out toots with invalid URL
         .filter_map(|t| BaseUrl::try_from(t.url.as_str()).ok())
         .map(|u| get_toot_embed_code(u))
         .collect()

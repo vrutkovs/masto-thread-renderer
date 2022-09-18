@@ -24,10 +24,10 @@ async fn thread(url: String) -> Result<templates::Thread, Custom<String>> {
         .map_err(|e| Custom(Status::InternalServerError, format!("{:?}", e)))?;
     let root_toot = mastodon::get_toot_embed_code(toot_url.clone())
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
-    let author_url = mastodon::get_toot_author(toot_url.clone())
+    let author = mastodon::get_toot_author(toot_url.clone())
         .await
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
-    let thread_children = mastodon::get_children(toot_url.clone(), author_url)
+    let thread_children = mastodon::get_children(toot_url.clone(), author)
         .await
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
     Ok(templates::Thread {
