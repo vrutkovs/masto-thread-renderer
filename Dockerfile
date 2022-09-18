@@ -10,7 +10,10 @@ RUN cargo build -r
 FROM quay.io/fedora/fedora-minimal:36
 WORKDIR /srv/masto-thread-renderer
 RUN microdnf update -y && microdnf clean all
+COPY --from=builder /code/Rocket.toml .
 COPY --from=builder /code/public ./public
-COPY --from=builder /code/target/release/masto-thread-renderer ./bin/masto-thread-renderer
+COPY --from=builder /code/target/release/masto-thread-renderer /usr/local/bin/
 EXPOSE 8080
-CMD ["/srv/masto-thread-renderer/bin/masto-thread-renderer"]
+ENV ROCKET_CONFIG=/srv/masto-thread-renderer/Rocket.toml
+ENV ROCKET_PROFILE=production
+CMD ["/usr/local/bin/masto-thread-renderer"]

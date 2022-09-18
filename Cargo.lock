@@ -898,6 +898,7 @@ dependencies = [
  "askama",
  "askama_rocket",
  "base_url",
+ "figment",
  "html2md",
  "npm_rs",
  "reqwest",

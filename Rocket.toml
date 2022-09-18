@@ -1,0 +1,28 @@
+[default]
+address = "127.0.0.1"
+port = 8000
+workers = 16
+max_blocking = 512
+keep_alive = 5
+ident = "Rocket"
+log_level = "debug"
+temp_dir = "/tmp"
+cli_colors = true
+public_files_path = "public"
+
+[default.limits]
+form = "64 kB"
+json = "1 MiB"
+msgpack = "2 MiB"
+"file/jpg" = "5 MiB"
+
+[default.shutdown]
+ctrlc = true
+signals = ["term", "hup"]
+grace = 5
+mercy = 5
+
+[release]
+address = "0.0.0.0"
+port = 8080
+public_files_path = "/srv/masto-thread-renderer/public"
