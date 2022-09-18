@@ -37,12 +37,12 @@ pub struct TootContext {
 pub fn get_toot_embed_code(toot_url: BaseUrl) -> Fallible<TootTemplate> {
     let mut embed_url = toot_url.clone();
     embed_url.set_path(format!("{}/embed", embed_url.path()).as_str());
-    let mut embed_js = toot_url.clone();
+    let mut embed_js = toot_url;
     embed_js.set_path("/embed.js");
-    return Ok(TootTemplate {
+    Ok(TootTemplate {
         embed_url: embed_url.to_string(),
         embed_js: embed_js.to_string(),
-    });
+    })
 }
 
 pub async fn get_toot_id_from_url(toot_url: BaseUrl) -> Fallible<String> {
@@ -93,6 +93,6 @@ pub async fn get_children(toot_url: BaseUrl, author: MastoAccount) -> Fallible<V
         .filter(|t| {
             t.account.url == author.url && t.in_reply_to_account_id == Some(author.clone().id)
         })
-        .map(|t| t.clone())
+        .cloned()
         .collect())
 }
