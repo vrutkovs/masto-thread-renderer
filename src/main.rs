@@ -9,6 +9,11 @@ mod mastodon;
 mod routes;
 mod templates;
 
+#[rocket::get("/healthz")]
+fn healthz() -> String {
+    "OK".to_string()
+}
+
 #[launch]
 fn rocket() -> _ {
     let rocket = rocket::build();
@@ -19,7 +24,7 @@ fn rocket() -> _ {
     rocket
         .mount(
             "/",
-            routes![routes::index, routes::thread, routes::markdown],
+            routes![healthz, routes::index, routes::thread, routes::markdown],
         )
         .mount("/public", FileServer::from(public_files_path))
 }
