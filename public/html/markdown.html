@@ -3,10 +3,12 @@
 <div class="container mx-auto flex flex-col items-center my-12 md:my-12">
 {% include "components/input.html" %}
 </div>
-<div class="mx-auto flex flex-col items-center my-4 space-y-12">
-  {{ root_toot.content }}
-  {% for toot in thread_children %}
-    {{ toot.content }}
-  {% endfor %}
+<div class="flex flex-col items-center my-4 mx-48">
+  <pre class="whitespace-pre-line">
+    {{ root_toot.content_to_markdown() }}
+    {% for toot in thread_children %}
+      {{ toot.content_to_markdown() }}
+    {% endfor %}
+  </pre>
 </div>
 {% endblock %}

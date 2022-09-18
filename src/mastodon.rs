@@ -1,5 +1,6 @@
 use crate::anyhow::Result as Fallible;
 use base_url::BaseUrl;
+use html2md::parse_html;
 
 #[derive(Clone)]
 pub struct TootTemplate {
@@ -19,6 +20,12 @@ pub struct Toot {
     pub url: String,
     pub in_reply_to_account_id: Option<String>,
     pub content: String,
+}
+
+impl Toot {
+    pub fn content_to_markdown(&self) -> String {
+        parse_html(self.content.as_str())
+    }
 }
 
 #[derive(serde::Deserialize)]
