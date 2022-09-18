@@ -1,5 +1,5 @@
 use crate::anyhow::Result as Fallible;
-use base_url::{BaseUrl, TryFrom};
+use base_url::BaseUrl;
 
 #[derive(Clone)]
 pub struct TootTemplate {
@@ -13,11 +13,12 @@ pub struct MastoAccount {
     pub url: String,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Clone)]
 pub struct Toot {
     pub account: MastoAccount,
     pub url: String,
     pub in_reply_to_account_id: Option<String>,
+    pub content: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -47,22 +48,21 @@ pub async fn get_toot_id_from_url(toot_url: BaseUrl) -> Fallible<String> {
         .map_err(|e| anyhow!(e.to_string()))
 }
 
-pub async fn get_toot_author(toot_url: BaseUrl) -> Fallible<MastoAccount> {
+pub async fn get_toot_details(toot_url: BaseUrl) -> Fallible<Toot> {
     let toot_id = get_toot_id_from_url(toot_url.clone()).await?;
     let mut toot_details_url = toot_url.clone();
     toot_details_url.make_host_only();
     toot_details_url.set_path(format!("/api/v1/statuses/{}", toot_id).as_str());
     let client = reqwest::Client::new();
-    let toot_details = client
+    Ok(client
         .get(toot_details_url.to_string())
         .send()
         .await?
         .json::<Toot>()
-        .await?;
-    Ok(toot_details.account)
+        .await?)
 }
 
-pub async fn get_children(toot_url: BaseUrl, author: MastoAccount) -> Fallible<Vec<TootTemplate>> {
+pub async fn get_children(toot_url: BaseUrl, author: MastoAccount) -> Fallible<Vec<Toot>> {
     // Last section of the URL is status ID
     let toot_id = toot_url
         .path_segments()
@@ -79,15 +79,13 @@ pub async fn get_children(toot_url: BaseUrl, author: MastoAccount) -> Fallible<V
         .await?
         .json::<TootContext>()
         .await?;
-    toot_context
+    Ok(toot_context
         .descendants
         .iter()
         // Filter out replies from other users or from author to other users
         .filter(|t| {
             t.account.url == author.url && t.in_reply_to_account_id == Some(author.clone().id)
         })
-        // Filter out toots with invalid URL
-        .filter_map(|t| BaseUrl::try_from(t.url.as_str()).ok())
-        .map(|u| get_toot_embed_code(u))
-        .collect()
+        .map(|t| t.clone())
+        .collect())
 }

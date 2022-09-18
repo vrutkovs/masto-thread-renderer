@@ -1,4 +1,4 @@
-use crate::mastodon::TootTemplate;
+use crate::mastodon::{Toot, TootTemplate};
 use askama::Template;
 
 #[derive(Template)]
@@ -15,4 +15,13 @@ pub struct Thread {
     pub url: Option<String>,
     pub root_toot: TootTemplate,
     pub thread_children: Vec<TootTemplate>,
+}
+
+#[derive(Template)]
+#[template(path = "markdown.html")]
+pub struct Markdown {
+    pub title: String,
+    pub url: Option<String>,
+    pub root_toot: Toot,
+    pub thread_children: Vec<Toot>,
 }
