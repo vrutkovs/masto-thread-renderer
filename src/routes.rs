@@ -18,11 +18,13 @@ pub async fn thread(url: String) -> Result<templates::Thread, Custom<String>> {
         .map_err(|e| Custom(Status::InternalServerError, format!("{:?}", e)))?;
     let root_toot = mastodon::get_toot_embed_code(toot_url.clone())
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
-    let toot_details = mastodon::get_toot_details(toot_url.clone())
+
+    let client = reqwest::Client::new();
+    let toot_details = mastodon::get_toot_details(&client, &toot_url)
         .await
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
     let thread_children: Vec<mastodon::TootTemplate> =
-        mastodon::get_children(toot_url.clone(), toot_details.account)
+        mastodon::get_children(&client, &toot_url, &toot_details.account)
             .await
             .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?
             .iter()
@@ -42,11 +44,13 @@ pub async fn thread(url: String) -> Result<templates::Thread, Custom<String>> {
 pub async fn markdown(url: String) -> Result<templates::Markdown, Custom<String>> {
     let toot_url = BaseUrl::try_from(url.as_str())
         .map_err(|e| Custom(Status::InternalServerError, format!("{:?}", e)))?;
-    let root_toot = mastodon::get_toot_details(toot_url.clone())
+
+    let client = reqwest::Client::new();
+    let root_toot = mastodon::get_toot_details(&client, &toot_url)
         .await
         .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
     let thread_children: Vec<mastodon::Toot> =
-        mastodon::get_children(toot_url.clone(), root_toot.clone().account)
+        mastodon::get_children(&client, &toot_url, &root_toot.account)
             .await
             .map_err(|e| Custom(Status::InternalServerError, e.to_string()))?;
     Ok(templates::Markdown {

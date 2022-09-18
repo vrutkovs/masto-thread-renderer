@@ -55,12 +55,11 @@ pub async fn get_toot_id_from_url(toot_url: BaseUrl) -> Fallible<String> {
         .map_err(|e| anyhow!(e.to_string()))
 }
 
-pub async fn get_toot_details(toot_url: BaseUrl) -> Fallible<Toot> {
+pub async fn get_toot_details(client: &reqwest::Client, toot_url: &BaseUrl) -> Fallible<Toot> {
     let toot_id = get_toot_id_from_url(toot_url.clone()).await?;
     let mut toot_details_url = toot_url.clone();
     toot_details_url.make_host_only();
     toot_details_url.set_path(format!("/api/v1/statuses/{}", toot_id).as_str());
-    let client = reqwest::Client::new();
     Ok(client
         .get(toot_details_url.to_string())
         .send()
@@ -69,7 +68,10 @@ pub async fn get_toot_details(toot_url: BaseUrl) -> Fallible<Toot> {
         .await?)
 }
 
-pub async fn get_children(toot_url: BaseUrl, author: MastoAccount) -> Fallible<Vec<Toot>> {
+pub async fn get_toot_context(
+    client: &reqwest::Client,
+    toot_url: &BaseUrl,
+) -> Fallible<TootContext> {
     // Last section of the URL is status ID
     let toot_id = toot_url
         .path_segments()
@@ -79,14 +81,21 @@ pub async fn get_children(toot_url: BaseUrl, author: MastoAccount) -> Fallible<V
     let mut toot_context_url = toot_url.clone();
     toot_context_url.make_host_only();
     toot_context_url.set_path(format!("/api/v1/statuses/{}/context", toot_id).as_str());
-    let client = reqwest::Client::new();
-    let toot_context = client
+    Ok(client
         .get(toot_context_url.to_string())
         .send()
         .await?
         .json::<TootContext>()
-        .await?;
-    Ok(toot_context
+        .await?)
+}
+
+pub async fn get_children(
+    client: &reqwest::Client,
+    toot_url: &BaseUrl,
+    author: &MastoAccount,
+) -> Fallible<Vec<Toot>> {
+    Ok(get_toot_context(client, toot_url)
+        .await?
         .descendants
         .iter()
         // Filter out replies from other users or from author to other users
