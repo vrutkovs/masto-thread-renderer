@@ -15,5 +15,5 @@ COPY --from=builder /code/public ./public
 COPY --from=builder /code/target/release/masto-thread-renderer /usr/local/bin/
 EXPOSE 8080
 ENV ROCKET_CONFIG=/srv/masto-thread-renderer/Rocket.toml
-ENV ROCKET_PROFILE=production
+ENV ROCKET_PROFILE=release
 CMD ["/usr/local/bin/masto-thread-renderer"]
