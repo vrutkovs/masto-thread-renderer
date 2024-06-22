@@ -1,0 +1,9 @@
+{% extends "components/base.html" %}
+{% block content %}
+<div class="container mx-auto flex flex-col items-center my-12 md:my-12">
+{% include "components/input.html" %}
+</div>
+<div class="flex flex-col items-center my-4 mx-48">
+  {{ error }}
+</div>
+{% endblock %}

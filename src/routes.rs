@@ -1,3 +1,4 @@
+use crate::errors::CustomError;
 use crate::mastodon;
 use crate::templates;
 use base_url::{BaseUrl, TryFrom};
@@ -17,7 +18,7 @@ pub async fn index() -> templates::Index {
 pub async fn thread(
     url: String,
     client: &State<reqwest::Client>,
-) -> Result<templates::Thread, Custom<String>> {
+) -> Result<templates::Thread, CustomError> {
     let toot_url = BaseUrl::try_from(url.as_str())
         .map_err(|e| Custom(Status::InternalServerError, format!("{:?}", e)))?;
     let root_toot = mastodon::get_toot_embed_code(toot_url.clone())

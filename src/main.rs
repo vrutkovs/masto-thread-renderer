@@ -5,6 +5,7 @@ extern crate anyhow;
 
 use rocket::fs::FileServer;
 
+mod errors;
 mod mastodon;
 mod routes;
 mod templates;

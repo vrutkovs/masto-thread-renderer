@@ -25,3 +25,11 @@ pub struct Markdown {
     pub root_toot: Toot,
     pub thread_children: Vec<Toot>,
 }
+
+#[derive(Template)]
+#[template(path = "error.html")]
+pub struct Error {
+    pub title: String,
+    pub url: Option<String>,
+    pub error: String,
+}
