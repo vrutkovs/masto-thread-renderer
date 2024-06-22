@@ -1,3 +1,4 @@
+use crate::anyhow::Context;
 use crate::anyhow::Result as Fallible;
 use base_url::BaseUrl;
 use html2md::parse_html;
@@ -83,16 +84,18 @@ pub async fn get_toot_id_from_url(toot_url: BaseUrl) -> Fallible<String> {
 }
 
 pub async fn get_toot_details(client: &reqwest::Client, toot_url: &BaseUrl) -> Fallible<Toot> {
-    let toot_id = get_toot_id_from_url(toot_url.clone()).await?;
+    let toot_id = get_toot_id_from_url(toot_url.clone())
+        .await
+        .context("fetching toot id")?;
     let mut toot_details_url = toot_url.clone();
     toot_details_url.make_host_only();
     toot_details_url.set_path(format!("/api/v1/statuses/{}", toot_id).as_str());
-    Ok(client
+    let result = client
         .get(toot_details_url.to_string())
         .send()
-        .await?
-        .json::<Toot>()
-        .await?)
+        .await
+        .context("fetching toot")?;
+    result.json::<Toot>().await.context("deserializing toot")
 }
 
 pub async fn get_toot_context(
@@ -104,16 +107,20 @@ pub async fn get_toot_context(
         .path_segments()
         .last()
         .ok_or("invalid URL")
-        .map_err(|e| anyhow!(e.to_string()))?;
+        .map_err(|e| anyhow!(e.to_string()))
+        .context("fetching toot id")?;
     let mut toot_context_url = toot_url.clone();
     toot_context_url.make_host_only();
     toot_context_url.set_path(format!("/api/v1/statuses/{}/context", toot_id).as_str());
-    Ok(client
+    let result = client
         .get(toot_context_url.to_string())
         .send()
-        .await?
+        .await
+        .context("fetching toot context")?;
+    result
         .json::<TootContext>()
-        .await?)
+        .await
+        .context("converting to json")
 }
 
 pub async fn get_children(
@@ -122,7 +129,8 @@ pub async fn get_children(
     author: &MastoAccount,
 ) -> Fallible<Vec<Toot>> {
     Ok(get_toot_context(client, toot_url)
-        .await?
+        .await
+        .context("fetching toot context")?
         .descendants
         .iter()
         // Filter out replies from other users or from author to other users

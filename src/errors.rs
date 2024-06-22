@@ -5,38 +5,34 @@ use rocket::request::Request;
 use rocket::response::{self, Responder, Response};
 use std::io::Cursor;
 
-//#[derive(Error)]
 #[derive(Debug, Clone)]
-pub enum CustomError {
-    //#[resp("{0}")]
+pub enum RenderError {
     Internal(String),
 
-    //#[resp("{0}")]
     NotFound(String),
 
-    //#[resp("{0}")]
     BadRequest(String),
 }
 
-impl CustomError {
+impl RenderError {
     fn get_http_status(&self) -> Status {
         match self {
-            CustomError::Internal(_) => Status::InternalServerError,
-            CustomError::NotFound(_) => Status::NotFound,
+            RenderError::Internal(_) => Status::InternalServerError,
+            RenderError::NotFound(_) => Status::NotFound,
             _ => Status::BadRequest,
         }
     }
 
     fn get_error_message(&self) -> String {
         match self {
-            CustomError::Internal(s) => s.to_owned(),
-            CustomError::NotFound(s) => s.to_owned(),
+            RenderError::Internal(s) => s.to_owned(),
+            RenderError::NotFound(s) => s.to_owned(),
             _ => "Unknown error".to_owned(),
         }
     }
 }
 
-impl std::fmt::Display for CustomError {
+impl std::fmt::Display for RenderError {
     fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
         write!(
             fmt,
@@ -47,13 +43,32 @@ impl std::fmt::Display for CustomError {
     }
 }
 
-impl From<rocket::response::status::Custom<std::string::String>> for CustomError {
-    fn from(e: rocket::response::status::Custom<std::string::String>) -> Self {
-        CustomError::Internal(e.1)
+impl From<rocket::response::status::Custom<String>> for RenderError {
+    fn from(e: rocket::response::status::Custom<String>) -> Self {
+        RenderError::Internal(e.1)
     }
 }
 
-impl<'r> Responder<'r, 'static> for CustomError {
+impl From<base_url::BaseUrlError> for RenderError {
+    fn from(e: base_url::BaseUrlError) -> Self {
+        match e {
+            base_url::BaseUrlError::CannotBeBase => {
+                RenderError::Internal("cannot be base URL".to_string())
+            }
+            base_url::BaseUrlError::ParseError(e) => {
+                RenderError::Internal(format!("URL parse error: {:?}", e))
+            }
+        }
+    }
+}
+
+impl From<anyhow::Error> for RenderError {
+    fn from(e: anyhow::Error) -> Self {
+        RenderError::Internal(format!("{:#?}\n{}", e, e.backtrace()))
+    }
+}
+
+impl<'r> Responder<'r, 'static> for RenderError {
     fn respond_to(self, _: &'r Request<'_>) -> response::Result<'static> {
         let body = templates::Error {
             title: "Uh-oh".to_string(),
