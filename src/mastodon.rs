@@ -32,8 +32,26 @@ pub struct MediaAttachement {
 }
 
 impl Toot {
+    pub fn media_attachments_to_markdown(&self) -> String {
+        self.media_attachments
+            .clone()
+            .into_iter()
+            .filter(|m| m.media_type == "image")
+            .map(|m| {
+                format!(
+                    "![{0}]({1})",
+                    m.description.unwrap_or("No alt text".to_string()),
+                    m.url,
+                )
+            })
+            .collect::<Vec<String>>()
+            .join("\n")
+    }
+
     pub fn content_to_markdown(&self) -> String {
-        parse_html(self.content.as_str())
+        let content = parse_html(self.content.as_str());
+        let media_attachments = self.media_attachments_to_markdown();
+        format!("{content}\n{media_attachments}")
     }
 }
 
