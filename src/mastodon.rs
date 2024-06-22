@@ -20,6 +20,15 @@ pub struct Toot {
     pub url: String,
     pub in_reply_to_account_id: Option<String>,
     pub content: String,
+    pub media_attachments: Vec<MediaAttachement>,
+}
+
+#[derive(serde::Deserialize, Clone)]
+pub struct MediaAttachement {
+    #[serde(rename = "type")]
+    pub media_type: String,
+    pub url: String,
+    pub description: Option<String>,
 }
 
 impl Toot {
