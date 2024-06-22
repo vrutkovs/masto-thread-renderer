@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora-minimal:36 as builder
+FROM quay.io/fedora/fedora-minimal:40 as builder
 WORKDIR /code
 COPY . .
 RUN microdnf update -y && \
@@ -7,7 +7,7 @@ RUN microdnf update -y && \
 RUN cd public && NODE_ENV=production npm run css && cd ..
 RUN cargo build -r
 
-FROM quay.io/fedora/fedora-minimal:36
+FROM quay.io/fedora/fedora-minimal:40
 WORKDIR /srv/masto-thread-renderer
 RUN microdnf update -y && microdnf clean all
 COPY --from=builder /code/Rocket.toml .
