@@ -9,13 +9,13 @@ pub struct TootTemplate {
     pub embed_js: String,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
 pub struct MastoAccount {
     pub id: String,
     pub url: String,
 }
 
-#[derive(serde::Deserialize, Clone)]
+#[derive(serde::Deserialize, Clone, Debug)]
 pub struct Toot {
     pub account: MastoAccount,
     pub url: String,
@@ -24,7 +24,7 @@ pub struct Toot {
     pub media_attachments: Vec<MediaAttachement>,
 }
 
-#[derive(serde::Deserialize, Clone)]
+#[derive(serde::Deserialize, Clone, Debug)]
 pub struct MediaAttachement {
     #[serde(rename = "type")]
     pub media_type: String,
@@ -90,12 +90,15 @@ pub async fn get_toot_details(client: &reqwest::Client, toot_url: &BaseUrl) -> F
     let mut toot_details_url = toot_url.clone();
     toot_details_url.make_host_only();
     toot_details_url.set_path(format!("/api/v1/statuses/{}", toot_id).as_str());
-    let result = client
-        .get(toot_details_url.to_string())
+    let details_url = dbg!(toot_details_url.to_string());
+    let response = client
+        .get(details_url)
         .send()
         .await
         .context("fetching toot")?;
-    result.json::<Toot>().await.context("deserializing toot")
+
+    let response_text = dbg!(response.text().await.unwrap());
+    dbg!(serde_json::from_str::<Toot>(&response_text).map_err(|e| anyhow!(e)))
 }
 
 pub async fn get_toot_context(
