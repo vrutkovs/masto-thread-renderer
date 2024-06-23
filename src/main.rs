@@ -27,7 +27,7 @@ fn rocket() -> _ {
     let client = reqwest::Client::builder()
         .gzip(true)
         .connection_verbose(true)
-        // .user_agent("Masto-Thread-Renderer/0.0.1. Contact @vadim@vrutkovs.eu if misbehaving")
+        .user_agent("Masto-Thread-Renderer/0.0.1. Contact @vadim@vrutkovs.eu if misbehaving")
         .build()
         .unwrap();
 
