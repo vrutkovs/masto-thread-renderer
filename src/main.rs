@@ -22,8 +22,9 @@ fn rocket() -> _ {
     let public_files_path = figment
         .extract_inner("public_files_path")
         .unwrap_or("public");
+    let client = reqwest::Client::builder().gzip(true).build().unwrap();
     rocket
-        .manage(reqwest::Client::new())
+        .manage(client)
         .mount(
             "/",
             routes![healthz, routes::index, routes::thread, routes::markdown],
