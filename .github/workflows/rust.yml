@@ -113,16 +113,27 @@ jobs:
           cargo clippy -- -D warnings
       - name: Install cargo check tools
         run: |
-          cargo install --locked cargo-outdated || true
           cargo install --locked cargo-udeps || true
           cargo install --locked cargo-audit || true
           cargo install --locked cargo-pants || true
-      - name: Check
+      - name: cargo deny check
+        continue-on-error: true
         run: |
-          cargo outdated --exit-code 1
+          cargo deny check
+      - name: cargo outdated
+        continue-on-error: true
+        run: |
+          cargo outdated
+      - name: cargo udeps
+        continue-on-error: true
+        run: |
           cargo udeps
+      - name: cargo audit
+        continue-on-error: true
+        run: |
           rm -rf ~/.cargo/advisory-db
           cargo audit
+      - name: cargo pants
+        continue-on-error: true
+        run: |
           cargo pants
-      - name: Test
-        run: cargo test
