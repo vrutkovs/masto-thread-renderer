@@ -13,7 +13,7 @@ jobs:
   test:
     name: Test
     env:
-      PROJECT_NAME_UNDERSCORE: rust_ci_github_actions_workflow
+      PROJECT_NAME_UNDERSCORE: masto_thread_renderer
       CARGO_INCREMENTAL: 0
       RUSTFLAGS: -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort
       RUSTDOCFLAGS: -Cpanic=abort
