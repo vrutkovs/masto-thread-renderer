@@ -70,12 +70,12 @@ jobs:
           cargo test $CARGO_OPTIONS -- -Z unstable-options --format json | cargo2junit > results.xml;
           zip -0 ccov.zip `find . \( -name "$PROJECT_NAME_UNDERSCORE*.gc*" \) -print`;
           grcov ccov.zip -s . -t lcov --llvm --ignore-not-existing --ignore "/*" --ignore "tests/*" -o lcov.info;
-      - name: Upload test results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          check_name: Test Results
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          files: results.xml
+          name: Test Results
+          path: results.xml
       - name: Upload to CodeCov
         uses: codecov/codecov-action@v4
         with:
@@ -140,3 +140,13 @@ jobs:
         continue-on-error: true
         run: |
           cargo pants
+
+  event_file:
+    name: "Event File"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Event File
+        path: ${{ github.event_path }}
