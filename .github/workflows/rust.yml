@@ -15,8 +15,7 @@ jobs:
     env:
       PROJECT_NAME_UNDERSCORE: masto_thread_renderer
       CARGO_INCREMENTAL: 0
-      RUSTFLAGS: -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort
-      RUSTDOCFLAGS: -Cpanic=abort
+      RUSTFLAGS: -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
