@@ -8,9 +8,9 @@ use std::io::Cursor;
 #[derive(Debug, Clone)]
 pub enum RenderError {
     Internal(String),
-
+    #[allow(dead_code)]
     NotFound(String),
-
+    #[allow(dead_code)]
     BadRequest(String),
 }
 
