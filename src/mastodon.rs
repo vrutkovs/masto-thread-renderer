@@ -131,12 +131,27 @@ pub async fn get_children(
     toot_url: &BaseUrl,
     author: &MastoAccount,
 ) -> Fallible<Vec<Toot>> {
+    let mut found_first_toot = false;
     let mut current_toot = toot_url.clone();
     let mut result: Vec<Toot> = vec![];
     loop {
-        let mut descendants: Vec<Toot> = get_toot_context(client, &current_toot)
+        let toot_context = get_toot_context(client, &current_toot)
             .await
-            .context("fetching toot context")?
+            .context("fetching toot context")?;
+
+        if !found_first_toot {
+            let maybe_first_toot = toot_context.ancestors.first();
+            if let Some(first_toot) = maybe_first_toot {
+                current_toot = BaseUrl::try_from(first_toot.url.as_ref())
+                    .map_err(|e| anyhow!("{:?}", e))
+                    .context("fetching last toot")?;
+                continue;
+            } else {
+                found_first_toot = true
+            }
+        }
+
+        let mut descendants: Vec<Toot> = toot_context
             .descendants
             .iter()
             // Filter out replies from other users or from author to other users
@@ -153,7 +168,7 @@ pub async fn get_children(
         result.append(&mut descendants);
         current_toot = BaseUrl::try_from(last_toot.url.as_ref())
             .map_err(|e| anyhow!("{:?}", e))
-            .context("fetching initial toot")?;
+            .context("fetching last toot")?;
     }
     Ok(result)
 }
