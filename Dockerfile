@@ -2,7 +2,7 @@ FROM quay.io/fedora/fedora-minimal:40 as builder
 WORKDIR /code
 COPY . .
 RUN microdnf update -y && \
-    microdnf install -y npm rust cargo openssl-devel && \
+    microdnf install -y npm rust cargo openssl-devel git-core && \
     microdnf clean all
 RUN cd public && NODE_ENV=production npm run css && cd ..
 RUN cargo build -r
