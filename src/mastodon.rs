@@ -1,3 +1,5 @@
+use std::vec;
+
 use crate::anyhow::Context;
 use crate::anyhow::Result as Fallible;
 use base_url::BaseUrl;
@@ -56,7 +58,7 @@ impl Toot {
     }
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, Debug)]
 pub struct TootContext {
     pub ancestors: Vec<Toot>,
     pub descendants: Vec<Toot>,
@@ -115,15 +117,13 @@ pub async fn get_toot_context(
     let mut toot_context_url = toot_url.clone();
     toot_context_url.make_host_only();
     toot_context_url.set_path(format!("/api/v1/statuses/{}/context", toot_id).as_str());
-    let result = client
+    let response = client
         .get(toot_context_url.to_string())
         .send()
         .await
         .context("fetching toot context")?;
-    result
-        .json::<TootContext>()
-        .await
-        .context("converting to json")
+    let response_text = dbg!(response.text().await.unwrap());
+    dbg!(serde_json::from_str::<TootContext>(&response_text).map_err(|e| anyhow!(e)))
 }
 
 pub async fn get_children(
@@ -131,15 +131,29 @@ pub async fn get_children(
     toot_url: &BaseUrl,
     author: &MastoAccount,
 ) -> Fallible<Vec<Toot>> {
-    Ok(get_toot_context(client, toot_url)
-        .await
-        .context("fetching toot context")?
-        .descendants
-        .iter()
-        // Filter out replies from other users or from author to other users
-        .filter(|t| {
-            t.account.url == author.url && t.in_reply_to_account_id == Some(author.clone().id)
-        })
-        .cloned()
-        .collect())
+    let mut current_toot = toot_url.clone();
+    let mut result: Vec<Toot> = vec![];
+    loop {
+        let mut descendants: Vec<Toot> = get_toot_context(client, &current_toot)
+            .await
+            .context("fetching toot context")?
+            .descendants
+            .iter()
+            // Filter out replies from other users or from author to other users
+            .filter(|t| {
+                t.account.url == author.url && t.in_reply_to_account_id == Some(author.clone().id)
+            })
+            .cloned()
+            .collect();
+        if descendants.is_empty() {
+            break;
+        }
+        // Get last toot and check for its descendants too
+        let last_toot = descendants.last().unwrap().clone();
+        result.append(&mut descendants);
+        current_toot = BaseUrl::try_from(last_toot.url.as_ref())
+            .map_err(|e| anyhow!("{:?}", e))
+            .context("fetching initial toot")?;
+    }
+    Ok(result)
 }
