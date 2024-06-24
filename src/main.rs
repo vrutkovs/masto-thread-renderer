@@ -3,6 +3,7 @@ extern crate rocket;
 #[macro_use]
 extern crate anyhow;
 
+use log::{info, log_enabled, Level};
 use rocket::fs::FileServer;
 
 mod errors;
@@ -19,6 +20,9 @@ fn healthz() -> String {
 fn rocket() -> _ {
     env_logger::init();
 
+    if log_enabled!(Level::Info) {
+        info!("Running commit {}", env!("GIT_HASH"))
+    }
     let rocket = rocket::build();
     let figment = rocket.figment();
     let public_files_path = figment

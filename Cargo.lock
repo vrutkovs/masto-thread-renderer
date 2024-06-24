@@ -1052,6 +1052,7 @@ dependencies = [
  "env_logger",
  "figment",
  "html2md",
+ "log",
  "npm_rs",
  "reqwest",
  "rocket",
