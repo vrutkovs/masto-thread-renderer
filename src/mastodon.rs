@@ -1,9 +1,11 @@
+use std::cmp::PartialEq;
 use std::vec;
 
 use crate::anyhow::Context;
 use crate::anyhow::Result as Fallible;
 use base_url::BaseUrl;
 use html2md::parse_html;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
 pub struct TootTemplate {
@@ -11,13 +13,13 @@ pub struct TootTemplate {
     pub embed_js: String,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct MastoAccount {
     pub id: String,
     pub url: String,
 }
 
-#[derive(serde::Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Toot {
     pub account: MastoAccount,
     pub url: String,
@@ -26,7 +28,7 @@ pub struct Toot {
     pub media_attachments: Vec<MediaAttachement>,
 }
 
-#[derive(serde::Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct MediaAttachement {
     #[serde(rename = "type")]
     pub media_type: String,
@@ -58,7 +60,7 @@ impl Toot {
     }
 }
 
-#[derive(serde::Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct TootContext {
     pub ancestors: Vec<Toot>,
     pub descendants: Vec<Toot>,
@@ -90,7 +92,6 @@ pub async fn get_toot_details(client: &reqwest::Client, toot_url: &BaseUrl) -> F
         .await
         .context("fetching toot id")?;
     let mut toot_details_url = toot_url.clone();
-    toot_details_url.make_host_only();
     toot_details_url.set_path(format!("/api/v1/statuses/{}", toot_id).as_str());
     let details_url = dbg!(toot_details_url.to_string());
     let response = client
@@ -115,7 +116,6 @@ pub async fn get_toot_context(
         .map_err(|e| anyhow!(e.to_string()))
         .context("fetching toot id")?;
     let mut toot_context_url = toot_url.clone();
-    toot_context_url.make_host_only();
     toot_context_url.set_path(format!("/api/v1/statuses/{}/context", toot_id).as_str());
     let response = client
         .get(toot_context_url.to_string())

@@ -10,6 +10,8 @@ mod errors;
 mod mastodon;
 mod routes;
 mod templates;
+#[cfg(test)]
+mod tests;
 
 #[rocket::get("/healthz")]
 fn healthz() -> String {
