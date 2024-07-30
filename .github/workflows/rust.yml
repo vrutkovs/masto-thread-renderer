@@ -2,9 +2,9 @@ name: Rust
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
@@ -70,7 +70,7 @@ jobs:
           restore-keys: ${{ runner.os }}-cargo-nightly-
       - name: Generate test result and coverage report
         run: |
-          cargo install cargo2junit grcov;
+          cargo install --force cargo2junit grcov;
           cargo build --verbose;
           cargo test $CARGO_OPTIONS -- -Z unstable-options --format json | cargo2junit > results.xml;
           zip -0 ccov.zip `find . \( -name "$PROJECT_NAME_UNDERSCORE*.gc*" \) -print`;
