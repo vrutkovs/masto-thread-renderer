@@ -129,7 +129,6 @@ jobs:
         run: |
           cargo deny check
       - name: cargo outdated
-        continue-on-error: true
         run: |
           cargo outdated
       - name: cargo udeps
