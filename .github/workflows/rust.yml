@@ -132,7 +132,6 @@ jobs:
         run: |
           cargo outdated
       - name: cargo udeps
-        continue-on-error: true
         run: |
           cargo udeps
       - name: cargo audit
