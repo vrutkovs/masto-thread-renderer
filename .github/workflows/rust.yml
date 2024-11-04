@@ -126,7 +126,6 @@ jobs:
           cargo install --locked cargo-audit || true
           cargo install --locked cargo-pants || true
       - name: cargo deny check
-        continue-on-error: true
         run: |
           cargo deny check
       - name: cargo outdated
