@@ -135,7 +135,6 @@ jobs:
         run: |
           cargo udeps
       - name: cargo audit
-        continue-on-error: true
         run: |
           rm -rf ~/.cargo/advisory-db
           cargo audit
