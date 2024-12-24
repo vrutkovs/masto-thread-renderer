@@ -76,7 +76,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate test result and coverage report
         run: |
-          cargo install --force cargo2junit;
+          cargo install cargo2junit;
           cargo build --verbose;
           cargo test $CARGO_OPTIONS -- -Z unstable-options --format json | cargo2junit > results.xml;
       - name: Upload test results
