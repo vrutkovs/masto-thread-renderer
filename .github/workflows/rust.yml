@@ -43,18 +43,13 @@ jobs:
 
   test:
     name: Test
-    env:
-      PROJECT_NAME_UNDERSCORE: masto_thread_renderer
-      CARGO_INCREMENTAL: 0
-      RUSTFLAGS: -Zunstable-options -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: stable
           override: true
       - name: Set up cargo cache
         uses: actions/cache@v4
@@ -66,30 +61,18 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-nightly-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-nightly-
-      - name: Install cargo-tarpaulin
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-tarpaulin
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Generate test result and coverage report
-        run: |
-          cargo install cargo2junit;
-          cargo build --verbose;
-          cargo test $CARGO_OPTIONS -- -Z unstable-options --format json | cargo2junit > results.xml;
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: taiki-e/install-action@nextest
+      - name: Collect coverage data
+        run: cargo llvm-cov nextest; ls -la
       - name: Upload test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           check_name: Test Results
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          files: results.xml
-      - name: Run cargo-tarpaulin
-        uses: clechasseur/rs-cargo@v2
-        with:
-          command: tarpaulin
-          args: --skip-clean
+          files: target/nextest/ci/junit.xml
       - name: Upload to CodeCov
         uses: codecov/codecov-action@v5
         with:
