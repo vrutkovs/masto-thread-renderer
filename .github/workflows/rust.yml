@@ -89,6 +89,7 @@ jobs:
         uses: clechasseur/rs-cargo@v2
         with:
           command: tarpaulin
+          args: --skip-clean
       - name: Upload to CodeCov
         uses: codecov/codecov-action@v5
         with:
