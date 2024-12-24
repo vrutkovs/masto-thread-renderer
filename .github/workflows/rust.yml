@@ -66,13 +66,13 @@ jobs:
       - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Collect coverage data
-        run: cargo llvm-cov nextest; ls -la
+        run: cargo llvm-cov nextest
       - name: Upload test results
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           check_name: Test Results
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          files: target/nextest/ci/junit.xml
+          files: target/nextest/default/junit.xml
       - name: Upload to CodeCov
         uses: codecov/codecov-action@v5
         with:
