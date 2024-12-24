@@ -79,7 +79,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./lcov.info
           fail_ci_if_error: true
-        if: ${{ env.CODECOV_TOKEN != '' }}
 
   lint:
     name: Lint
