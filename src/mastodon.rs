@@ -81,7 +81,7 @@ pub async fn get_toot_id_from_url(toot_url: BaseUrl) -> Fallible<String> {
     // Last section of the URL is status ID
     toot_url
         .path_segments()
-        .last()
+        .next_back()
         .ok_or("invalid URL")
         .map(|s| s.to_string())
         .map_err(|e| anyhow!(e.to_string()))
@@ -111,7 +111,7 @@ pub async fn get_toot_context(
     // Last section of the URL is status ID
     let toot_id = toot_url
         .path_segments()
-        .last()
+        .next_back()
         .ok_or("invalid URL")
         .map_err(|e| anyhow!(e.to_string()))
         .context("fetching toot id")?;
