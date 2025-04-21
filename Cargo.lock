@@ -128,13 +128,9 @@ dependencies = [
 
 [[package]]
 name = "askama_rocket"
-version = "0.12.0"
+version = "0.13.0+deprecated"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebf814a0f98928b2ea4a0625ad7563d737ecf0707260b8360f4ad2a4b51918e6"
-dependencies = [
- "askama",
- "rocket",
-]
+checksum = "f91d0ff382fc4c3fa3d4eee85d009dc844c1407ab83aac20bb09f7bbf4adb634"
 
 [[package]]
 name = "assert-json-diff"
