@@ -56,7 +56,7 @@ impl From<base_url::BaseUrlError> for RenderError {
                 RenderError::Internal("cannot be base URL".to_string())
             }
             base_url::BaseUrlError::ParseError(e) => {
-                RenderError::Internal(format!("URL parse error: {:?}", e))
+                RenderError::Internal(format!("URL parse error: {e:?}"))
             }
         }
     }

@@ -92,7 +92,7 @@ pub async fn get_toot_details(client: &reqwest::Client, toot_url: &BaseUrl) -> F
         .await
         .context("fetching toot id")?;
     let mut toot_details_url = toot_url.clone();
-    toot_details_url.set_path(format!("/api/v1/statuses/{}", toot_id).as_str());
+    toot_details_url.set_path(format!("/api/v1/statuses/{toot_id}").as_str());
     let details_url = dbg!(toot_details_url.to_string());
     let response = client
         .get(details_url)
@@ -116,7 +116,7 @@ pub async fn get_toot_context(
         .map_err(|e| anyhow!(e.to_string()))
         .context("fetching toot id")?;
     let mut toot_context_url = toot_url.clone();
-    toot_context_url.set_path(format!("/api/v1/statuses/{}/context", toot_id).as_str());
+    toot_context_url.set_path(format!("/api/v1/statuses/{toot_id}/context").as_str());
     let response = client
         .get(toot_context_url.to_string())
         .send()
