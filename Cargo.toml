@@ -18,7 +18,7 @@ askama = { version = "0.12.0", features = [
 ] }
 anyhow = "1.0.101"
 base_url = "1.1.0"
-reqwest = { version = "0.13.1", features = [
+reqwest = { version = "0.13.2", features = [
     "json",
     "gzip",
     "deflate"
