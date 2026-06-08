@@ -74,7 +74,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           files: target/nextest/default/junit.xml
       - name: Upload to CodeCov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./lcov.info
